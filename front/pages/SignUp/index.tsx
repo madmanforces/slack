@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Success, Form, Error, Label, Input, LinkContainer, Button, Header } from './styles';
 import { Link, Redirect } from 'react-router-dom';
 import useSWR from 'swr';
+import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 
 const SignUp = () => {
 
@@ -34,8 +35,28 @@ const SignUp = () => {
       );
       const onSubmit = useCallback(
           (e) => {
-            e.preventDefault()
-            console.log(email, nickname, password, passwordCheck)
+            e.preventDefault();
+            if (!mismatchError && nickname) {
+              console.log('서버로 회원가입하기');
+              setSignUpError('');
+              setSignUpSuccess(false);
+              axios
+                .post('/api/users',{
+                  email,
+                  nickname,
+                  password,
+                })
+                .then((response) => {
+                  console.log(response);
+                  setSignUpSuccess(true);
+                })
+                .catch((error) => {
+                  console.log(error.response);
+                  setSignUpError(error.response.data);
+                })
+                .finally(() => {});
+            }
+            
       },
       [email, nickname, password, passwordCheck]
       );

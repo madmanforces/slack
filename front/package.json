@@ -22,7 +22,8 @@
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "swr": "^1.2.2",
-    "typescript": "^4.4.2"
+    "typescript": "^4.4.2",
+    "webpack-bundle-analyzer": "^4.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.13.8",
