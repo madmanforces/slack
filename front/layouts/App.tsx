@@ -1,14 +1,21 @@
 import React from 'react';
 import { Switch, Route, Redirect} from 'react-router-dom'
-import Login from '../pages/Login/index'
-import SignUp from '../pages/SignUp/index'
+import loadable from '@loadable/component';
 
-const App = () => {
-  return <Switch>
-    <Redirect exact path="/" to="/login"/>
-    <Route path="/login" component={Login} />
-    <Route path="/signup" component={SignUp} />
-  </Switch>
-};
+
+const LogIn = loadable(() => import('@pages/LogIn'));
+const SignUp = loadable(() => import('@pages/SignUp'));
+const Workspace = loadable(() => import('@layouts/Workspace'));
+
+function App(): JSX.Element {
+  return (
+    <Switch>
+      <Redirect exact path="/" to="/login" />
+      <Route path="/login" component={LogIn} />
+      <Route path="/signup" component={SignUp} />
+      <Route path="/workspace/channel" component={Workspace} />
+    </Switch>
+  );
+}
 
 export default App;
