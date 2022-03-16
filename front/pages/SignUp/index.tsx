@@ -1,69 +1,75 @@
-import React,{useCallback, useState,} from "react"
 import useInput from '@hooks/useInput';
 import fetcher from '@utils/fetcher';
+import React, { useCallback, useState, VFC } from 'react';
 import axios from 'axios';
+import useSWR from 'swr';
 import { Success, Form, Error, Label, Input, LinkContainer, Button, Header } from './styles';
 import { Link, Redirect } from 'react-router-dom';
-import useSWR from 'swr';
-import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 
 const SignUp = () => {
+  const { data, error, } = useSWR('/api/users', fetcher);
 
-    const { data, error } = useSWR('/api/users', fetcher);
-    const [email, onChangeEmail] = useInput('');
-    const [nickname, onChangeNickname] = useInput('');
-    const [password, , setPassword] = useInput('');
-    const [passwordCheck, , setPasswordCheck] = useInput('');
-    const [mismatchError, setMismatchError] = useState(false);
-    const [signUpError, setSignUpError] = useState('');
-    const [signUpSuccess, setSignUpSuccess] = useState(false);
+  const [email, onChangeEmail] = useInput('');
+  const [nickname, onChangeNickname] = useInput('');
+  const [password, , setPassword] = useInput('');
+  const [passwordCheck, , setPasswordCheck] = useInput('');
+  const [mismatchError, setMismatchError] = useState(false);
+  const [signUpError, setSignUpError] = useState('');
+  const [signUpSuccess, setSignUpSuccess] = useState(false);
 
-    const onChangePassword = useCallback(
-        (e) => {
-          setPassword(e.target.value);
-          setMismatchError(e.target.value !== passwordCheck);
-        },
-        [passwordCheck],
-      );
-    
-      const onChangePasswordCheck = useCallback(
-        (e) => {
-          setPasswordCheck(e.target.value);
-          setMismatchError(e.target.value !== password);
-        },
-        [password],
-      );
-      const onSubmit = useCallback(
-          (e) => {
-            e.preventDefault();
-            if (!mismatchError && nickname) {
-              console.log('서버로 회원가입하기');
-              setSignUpError('');
-              setSignUpSuccess(false);
-              axios
-                .post('/api/users',{
-                  email,
-                  nickname,
-                  password,
-                })
-                .then((response) => {
-                  console.log(response);
-                  setSignUpSuccess(true);
-                })
-                .catch((error) => {
-                  console.log(error.response);
-                  setSignUpError(error.response.data);
-                })
-                .finally(() => {});
-            }
-            
-      },
-      [email, nickname, password, passwordCheck]
-      );
-    
+  const onChangePassword = useCallback(
+    (e) => {
+      setPassword(e.target.value);
+      setMismatchError(e.target.value !== passwordCheck);
+    },
+    [passwordCheck],
+  );
 
-    return (
-        <div id="container">
+  const onChangePasswordCheck = useCallback(
+    (e) => {
+      setPasswordCheck(e.target.value);
+      setMismatchError(e.target.value !== password);
+    },
+    [password],
+  );
+
+  const onSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (!mismatchError && nickname) {
+        console.log('서버로 회원가입하기');
+        setSignUpError('');
+        setSignUpSuccess(false);
+        axios
+          .post('/api/users', {
+            email,
+            nickname,
+            password,
+          })
+          .then((response) => {
+            console.log(response);
+            setSignUpSuccess(true);
+          })
+          .catch((error) => {
+            console.log(error.response);
+            setSignUpError(error.response.data);
+          })
+          .finally(() => {});
+      }
+    },
+    [email, nickname, password, passwordCheck, mismatchError],
+  );
+
+  if (data === undefined) {
+    return <div>로딩중...</div>;
+  }
+
+  if (data) {
+    return <Redirect to="/workspace/sleact/channel/일반" />;
+  }
+
+  return (
+    <div id="container">
       <Header>Slack</Header>
       <Form onSubmit={onSubmit}>
         <Label id="email-label">
@@ -107,7 +113,7 @@ const SignUp = () => {
         <Link to="/login">로그인 하러가기</Link>
       </LinkContainer>
     </div>
-    );
+  );
 };
 
-export default SignUp
+export default SignUp;
