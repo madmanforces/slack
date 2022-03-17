@@ -1,10 +1,19 @@
 import React from 'react';
+import { Container, Header, DragOver } from '@pages/Channel/styles';
 
 const Channel = () => {
     return(
-        
-            <div>성공적으로 로그인 되었습니다.</div>
-            
+         <Container> 채널 
+             <Header>
+                 <span>#{Channel}</span>
+                 <div className='header-right' >
+                     <span> </span>
+                     <button>
+                        <i className="c-icon p-ia__view_header__button_icon c-icon--add-user" aria-hidden="true" />
+                     </button>
+                 </div>
+             </Header>
+         </Container> 
     )
 }
 

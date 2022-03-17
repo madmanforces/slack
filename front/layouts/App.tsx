@@ -11,7 +11,7 @@ function App(): JSX.Element {
       <Redirect exact path="/" to="/login"/>
       <Route path="/login" component={LogIn} />
       <Route path="/signup" component={SignUp} />
-      <Route path="/workspace/channel" component={Workspace} />
+      <Route path="/workspace" component={Workspace} />
     </Switch>
   );
 }
