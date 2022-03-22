@@ -3,6 +3,7 @@ import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import React, { VFC, useCallback, useState, useEffect } from 'react';
 import { Redirect, Route, Switch, useParams } from 'react-router';
+import Modal from '@components/Modal';
 import useSWR from 'swr';
 import {
     AddButton,
@@ -20,12 +21,14 @@ import {
     Workspaces,
     WorkspaceWrapper,
   } from '@layouts/Workspace/styles';
+  import { Button, Input, Label } from '@pages/SignUp/styles';
   import Menu from '@components/Menu';
   import gravatar from 'gravatar';
   import { IChannel, IUser } from '@typings/db';
   import { Link } from 'react-router-dom';
 import DirectMessage from '@pages/DirectMessage';
 import useInput from '@hooks/useInput';
+import { toast } from 'react-toastify';
  
 
 
@@ -69,6 +72,35 @@ const Workspace: VFC = () => {
     const onClickCreateWorkspace = useCallback(() => {
       setShowCreateWorkspaceModal(true);
     }, []);
+    const onCreateWorkspace = useCallback(
+        (e) => {
+          e.preventDefault();
+          if (!newWorkspace || !newWorkspace.trim()) return;
+          if (!newUrl || !newUrl.trim()) return;
+          axios
+            .post(
+              '/api/workspaces',
+              {
+                workspace: newWorkspace,
+                url: newUrl,
+              },
+              {
+                withCredentials: true,
+              },
+            )
+            .then(() => {
+              revalidate();
+              setShowCreateWorkspaceModal(false);
+              setNewWorkpsace('');
+              setNewUrl('');
+            })
+            .catch((error) => {
+              console.dir(error);
+              toast.error(error.response?.data, { position: 'bottom-center' });
+            });
+        },
+        [newWorkspace, newUrl],
+      );
   
   
     const onCloseModal = useCallback(() => {
@@ -147,6 +179,19 @@ const Workspace: VFC = () => {
                     </Switch>
                 </Chats>
             </WorkspaceWrapper>
+            <Modal show={showCreateWorkspaceModal} onCloseModal={onCloseModal}>
+        <form onSubmit={onCreateWorkspace}>
+          <Label id="workspace-label">
+            <span>워크스페이스 이름</span>
+            <Input id="workspace" value={newWorkspace} onChange={onChangeNewWorkspace} />
+          </Label>
+          <Label id="workspace-url-label">
+            <span>워크스페이스 url</span>
+            <Input id="workspace" value={newUrl} onChange={onChangeNewUrl} />
+          </Label>
+          <Button type="submit">생성하기</Button>
+        </form>
+      </Modal>
         </div>
     );
 }
